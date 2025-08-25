@@ -8,6 +8,60 @@
   <title>Tic Tac Toe!</title>
 </head>
 <body>
-  
+
+  <header>
+    <button class="button home" id="home">H</button>
+    <div class="header">
+      <h1>Tic Tac Toe</h1>
+      <p>(best of 5)</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- // FORM  // -->
+    <div class="form-section">
+      <form action="">
+        <div class="form">
+          <p class="player-input-container">
+            <label for="playerOneName">Player One (X)</label>
+            <input type="text" id="playerOneName" placeholder="player x's name">
+          </p>
+          <p class="player-input-container">
+            <label for="playerTwoName">Player Two (O)</label>
+            <input type="text" id="playerTwoName" placeholder="player o's name">
+          </p>
+        </div>
+        <button type="submit" class="button" id="start">Start</button>
+      </form>
+    </div>
+
+    <!-- // GAMEBOARD // -->
+    <div class="gameboard-section">
+      <div class="scoreboard">
+        <div class="player-info-container">
+          <p class="player-name" id="playerOneLabel">player one</p>
+          <p class="player-score" id="playerOneScore">0</p>
+        </div>
+        <div class="dash"><p>-</p></div>
+        <div class="player-info-container">
+          <p class="player-name" id="playerTwoLabel">player two</p>
+          <p class="player-score" id="playerTwoScore">0</p>
+        </div>
+      </div>
+      <div class="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+      </div>
+      <button class="button" id="restart">Restart</button>
+    </div>
+  </main>
+  <footer>copyright deihva.</footer>
 </body>
 </html>

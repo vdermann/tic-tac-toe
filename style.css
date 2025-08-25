@@ -1,0 +1,238 @@
+  @import url('https://fonts.googleapis.com/css2?family=Caesar+Dressing&family=Poor+Story&display=swap');
+  
+  :root {
+    --shadow: 1px 1px 5px rgba(0,0,0,0.5);
+    /* colors */
+    --black: #1D1D1D;
+    --gray: #2D2D2D;
+    --white: #F5F5F5;
+    --gold: #E3B261;
+    /* fonts */
+    --primary-font: "Caesar Dressing", sans-serif; 
+    --secondary-font: "Poor Story", sans-serif; 
+  }
+
+*, 
+*::after, 
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--white);
+  display: grid;
+  grid-template-rows: 1fr 4fr 100px;
+  place-items: center;
+  position: relative;
+  height: 100vh; 
+}
+
+
+/* ===== HEADER ===== */
+header {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  font-family: var(--primary-font);
+  padding: 1.5rem 1rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 5.3rem;
+  font-weight: 400;
+  text-shadow: var(--shadow);
+}
+
+header p {
+  font-family: var(--secondary-font);
+  font-size: 2.6rem;
+  text-shadow: var(--shadow);
+}
+
+header button {
+  position: absolute;
+  left: 2.5rem;
+  top: 2.5rem;
+  padding: 10px;
+}
+
+.button {
+  border: none;
+  background-color: var(--black);
+  font-family: var(--primary-font);
+  color: var(--white);
+  font-size: 2.5rem;
+  padding: 10px 40px;
+  border-radius: 6px;
+  transition: .5s;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: var(--gold);
+  box-shadow: var(--shadow);
+  scale: 1.05;
+}
+
+.home {
+  padding: 10px 25px;
+  visibility: hidden;
+}
+
+
+/* ===== MAIN ===== */
+/* FORM SECTION */
+.form-section {
+  display: flex;
+}
+
+main {
+  text-align: center;
+}
+
+form {
+  margin: 2rem 0;
+}
+
+.form {
+  padding: 3rem;
+  background-color: var(--black);
+  border-radius: 12px ;
+  width: 400px;
+  height: 380px;
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  gap: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.player-input-container {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.player-input-container label {
+  font-family: var(--secondary-font);
+  color: var(--white);
+  font-size: 2.5rem;
+}
+
+.player-input-container input {
+  font-family: var(--secondary-font);
+  background-color: var(--gray);
+  color: var(--white);
+  text-align: center;
+  font-size: 2rem;
+  border-radius: 12px;
+  border: none;
+}
+
+form button {
+  margin-top: 4rem;
+}
+
+
+/* GAMEBOARD SECTION */
+.gameboard-section {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.7rem;
+}
+
+.scoreboard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player-info-container {
+  display: flex;
+  gap: 10px;
+}
+
+.player-info-container * {
+  border-radius: 6px;
+  background-color: var(--black);
+  align-content: center;
+  font-family: var(--secondary-font);
+  font-size: 1.4rem;
+  color: var(--white);
+  height: 50px;
+}
+
+.player-name {
+  width: 150px;
+}
+
+.player-score {
+  width: 50px;
+  font-family: var(--primary-font);
+}
+
+.dash {
+  font-family: var(--primary-font);
+  font-size: 2rem;
+}
+
+.board {
+  display: grid;
+  width: fit-content;
+  background-color: var(--black);
+  grid-template-rows: repeat(3, 130px);
+  grid-template-columns: repeat(3, 130px);
+  gap: 10px;
+}
+
+.cell {
+  cursor: pointer;
+  align-content: center;
+  background-color: var(--white);
+  font-family: var(--secondary-font);
+  font-weight: 600;
+  font-size: 5rem;
+  transition: .5s;
+}
+
+.x-mark {
+  color: rgb(167, 131, 71);
+}
+
+.o-mark {
+  color: rgb(176, 178, 182);
+}
+
+.win {
+  color: var(--white);
+  background-color: var(--gold);
+}
+
+.black {
+  color: var(--black);
+}
+
+#restart {
+  visibility: hidden;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  font-family: var(--secondary-font);
+  font-size: 1.5rem;
+  opacity: .8;
+  position: absolute;
+  bottom: 2rem;
+}
+

@@ -1,108 +1,227 @@
-const Gameboard = (() => {
-  let board = ["", "", "", "", "", "", "", "", ""];
+  // ===== Game Board =====
+  const GameBoard = (() => {
+    let board = Array(9).fill("");
 
-  const getGameboard = () => board;
+    const getBoard = () => board;
 
-  const setCell = (index, marker) => {
-    if (board[index] === "") {
-      board[index] = marker;
-      return true;
+    const resetBoard = () => { board = Array(9).fill("") };
+    
+    const setCell = (index, marker) => {
+      if (board[index] === "") {
+        board[index] = marker;
+        return true;
+      }
+      return false;
+    };
+
+    return { getBoard, resetBoard, setCell };
+  })();
+
+
+  // ===== Create Player Factory =====
+  function createPlayer(name, marker) { 
+    return { name, marker, score: 0 } 
+  };
+
+
+  // ===== Game Controller =====
+  const GameController = (() => {
+    const playerOne = createPlayer("Player X", "X");
+    const playerTwo = createPlayer("Player O", "O");
+    let currentPlayer = playerOne;
+    let roundOver = false;
+
+    const winningCombinations = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],  // horizontal
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],  // vertical
+      [0, 4, 8], [2, 4, 6],             // diagonal
+    ];
+
+
+    const playTurn = (index) => {
+      if(roundOver) return;
+      if (!GameBoard.setCell(index, currentPlayer.marker)) return;  // Check if the play is valid.
+
+      if(checkWin(currentPlayer.marker)) {
+        currentPlayer.score++;
+        roundOver = true;
+        
+        return;
+      } else if(checkTie()) {
+        roundOver = true;
+        return;
+      } else {
+        switchPlayer();
+      };
+    };
+
+    const getWinningCombo = (marker) => {
+      return winningCombinations.find(combination => 
+        combination.every(index => GameBoard.getBoard()[index] === marker)
+      ) || null;
+    };
+
+    const checkWin = (marker) => {
+      return winningCombinations.some(combination => 
+        combination.every(index => GameBoard.getBoard()[index] === marker) // Evaluates whether all indexes in that combination have the same marker.
+      );
+    };
+
+    const checkTie = () => {
+      return GameBoard.getBoard().every(cell => cell !== "");
+    };
+
+    const switchPlayer = () => {
+      currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne;
+    };
+
+    const restart = () => {
+      GameBoard.resetBoard();
+      currentPlayer = playerOne;
+      roundOver = false;
+    };
+
+    const resetMatch = () => {
+      playerOne.score = 0;
+      playerTwo.score = 0;
+      restart();
     }
-    return false;
-  };
 
-  const resetGameboard = () => {
-    for (let i = 0; i < board.length; i++) {
-      board[i] = "";
+    const isRoundOver =  () => roundOver;
+    const isMatchOver =  () => playerOne.score === 3 || playerTwo.score === 3;
+    const getCurrentPlayer = () => currentPlayer;
+    const getPlayers = () => ({ playerOne, playerTwo })
+
+    return { playTurn, restart, resetMatch, getCurrentPlayer, getPlayers, isRoundOver, isMatchOver, getWinningCombo };
+  })();
+
+
+  // ===== Display Controller =====
+  const DisplayController = (() => {
+    const { playerOne, playerTwo } = GameController.getPlayers();
+
+    const formSection =  document.querySelector(".form-section");
+    const gameboardSection =  document.querySelector(".gameboard-section");
+
+    const playerOneInput = document.getElementById("playerOneName");
+    const playerTwoInput = document.getElementById("playerTwoName");
+
+    const xScoreEl = document.getElementById("playerOneScore");
+    const xLabelEl = document.getElementById("playerOneLabel");
+    const oScoreEl = document.getElementById("playerTwoScore");
+    const oLabelEl = document.getElementById("playerTwoLabel");
+
+    const cells = document.querySelectorAll(".cell");
+
+    const homeBtn = document.getElementById("home");
+    const startBtn = document.getElementById("start");
+    const restartBtn = document.getElementById("restart");
+
+    startBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      showNames();
+      renderBoard();
+
+      formSection.style.display = "none";
+      gameboardSection.style.display = "flex";
+      homeBtn.style.visibility = "visible";
+      restartBtn.style.visibility = "hidden";
+    })
+
+    restartBtn.addEventListener("click", () => {
+      restartBtn.style.visibility = "hidden";
+      GameController.resetMatch();
+      renderScore();
+      clearBoard();
+    });
+
+    homeBtn.addEventListener("click", () => {
+      homeBtn.style.visibility = "hidden"
+      formSection.style.display = "flex";
+      gameboardSection.style.display = "none";
+      GameController.resetMatch();
+      clearBoard();
+      resetUI();
+    });
+
+    cells.forEach(cell => {
+      cell.addEventListener("click", () => {
+        GameController.getCurrentPlayer().marker === "X" ? cell.classList.add("x-mark") : cell.classList.add("o-mark");
+        GameController.playTurn(cell.dataset.index);
+        renderBoard();
+
+        // Effects to improve user experience.
+        if (GameController.isRoundOver()) {
+          renderScore();
+          darkenMarks();
+          const winningCombo = GameController.getWinningCombo(GameController.getCurrentPlayer().marker);
+          if (winningCombo) highlightWinningCells(winningCombo);
+          if (GameController.isMatchOver()) {
+            highlightWinnerName(GameController.getCurrentPlayer());
+            restartBtn.style.visibility = "visible";
+            return;
+          }
+          setTimeout(() => clearBoard(), 2000);
+        }
+      })
+    })
+
+    const highlightWinnerName = (winner) => {
+      if (winner.marker = "X") {
+        xScoreEl.classList.add("win");
+        xLabelEl.classList.add("win");
+      } else {
+        oScoreEl.classList.add("win");
+        oLabelEl.classList.add("win");
+      }
     }
-  }
 
-  const printGameboard = () => {
-    console.log(`
-      ${board[0]} | ${board[1]} | ${board[2]}
-      ---------
-      ${board[3]} | ${board[4]} | ${board[5]}
-      ---------
-      ${board[6]} | ${board[7]} | ${board[8]}
-    `);
-  }
+    const highlightWinningCells = (combo) => {
+      combo.forEach(index => {
+        const cell = document.querySelector(`[data-index='${index}']`);
+        cell.classList.remove("black");
+        cell.classList.add('win');
+      });
+    };
 
-  return { getGameboard, setCell, resetGameboard, printGameboard };
-})();
-
-
-
-function createPlayer(name, marker) { 
-  return { name, marker } 
-}
-
-
-
-const GameController = (() => {
-  const playerOne = createPlayer("Lucas", "X");
-  const playerTwo = createPlayer("Marengo", "O");
-  let currentPlayer = playerOne;
-  let gameOver = false;
-
-
-  const WINNING_COMBINATIONS = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // horizontal
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // vertical
-    [0, 4, 8], [2, 4, 6],            // diagonal
-  ];
-
-
-  const playTurn = (index) => {
-    if(gameOver) return console.log("Game Over.");
-
-    const success = Gameboard.setCell(index, currentPlayer.marker);
-    if(!success) {
-      console.log("Esta celda ya está ocupada.");
-      return;
+    const removeHighlightWinner = () => {
+        xScoreEl.classList.remove("win");
+        xLabelEl.classList.remove("win");
+        oScoreEl.classList.remove("win");
+        oLabelEl.classList.remove("win");
     }
 
-    Gameboard.printGameboard();
-
-    if(checkWin(currentPlayer.marker)) {
-      console.log(`${currentPlayer.name} (${currentPlayer.marker}) ha ganado!`)
-      gameOver = true;
-      return;
+    const darkenMarks = () => {
+      cells.forEach(cell => cell.classList.add("black"));
     }
 
-    if(checkTie()) {
-      console.log(`Empate!`)
-      gameOver = true;
-      return;
+    const clearBoard = () => {
+      cells.forEach(cell => cell.classList.remove("x-mark", "o-mark", "win", "black"));
+      removeHighlightWinner();
+      GameController.restart();
+      renderBoard();
     }
 
-    switchPlayer();
-  };
+    const resetUI = () => {
+      playerOneInput.value = "";
+      xScoreEl.textContent = "0";
+      playerTwoInput.value = "";
+      oScoreEl.textContent = "0";
+    }
 
+    const showNames = () => {
+      xLabelEl.textContent = playerOneInput.value.trim() || "Player X";
+      oLabelEl.textContent = playerTwoInput.value.trim() || "Player O";
+    }
 
-  const checkWin = (marker) => {
-    return WINNING_COMBINATIONS.some(combination => 
-      combination.every(index => Gameboard.getGameboard()[index] === marker) // Evaluates whether all indexes in that combination have the same marker.
-    );
-  };
+    const renderScore = () => {
+      xScoreEl.textContent = playerOne.score;
+      oScoreEl.textContent = playerTwo.score;
+    }
 
-
-  const checkTie = () => {
-    return Gameboard.getGameboard().every(cell => cell !== "");
-  };
-
-
-  const switchPlayer = () => {
-    currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne;
-  };
-
-
-  const restart = () => {
-    Gameboard.resetGameboard();
-    currentPlayer = playerOne;
-    gameOver = false;
-    Gameboard.printGameboard();
-  };
-
-
-  return { playTurn, restart };
-})();
+    const renderBoard = () => {
+      cells.forEach((cell, index) => {
+        cell.textContent = GameBoard.getBoard()[index];
+      })
+    }
+  })();
